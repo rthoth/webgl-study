@@ -4,6 +4,8 @@
 
 	course.l01 = {};
 	course.gl = {};
+	course.lessons = {};
+	course.utils = {};
 
 	var start = function() {
 		var canvas;
@@ -13,7 +15,20 @@
 			canvas = document.getElementById("glCanvas" + i);
 			if (canvas)
 				course.gl[i] = createWebGLContext(canvas);
+
 		}
+		for (var i in course.lessons) {
+			try {
+				if (course.lessons[i])
+					course.lessons[i]();
+			} catch (e) {
+				alert("Problems in Lesson " + i + "\n" + e);
+				window.errors = window.errors || {};
+				window.errors[i] = e;
+				throw e;
+			}
+		}
+
 	};
 
 	var createWebGLContext = course.l01.createWebGLContext = function (canvas) {

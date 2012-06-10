@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+	<head>
+			<title>My 2nd WebGL...</title>
+
+			<script type="text/javascript" src="sylvester.src.js"></script>
+
+			<script type="text/javascript" src="lesson01.def.js"></script>
+			<script type="text/javascript" src="lesson01.js"></script>
+
+			<script type="text/javascript" src="lesson02.def.js"></script>
+			<script type="text/javascript" src="lesson02.js"></script>
+			<link rel="stylesheet" type="text/css" href="style.css" />
+
+
+			<script id="fragment-shader" type="x-shader/x-fragment">  
+				void main(void) {
+					gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);  
+				}
+			</script>
+
+			<script id="vertex-shader" type="x-shader/x-vertex">  
+				attribute vec3 aVertexPosition;  
+
+				uniform mat4 uMVMatrix;  
+				uniform mat4 uPMatrix;  
+
+				void main(void) {  
+					gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+				}  
+			</script>
+	</head>
+	<body>
+			<canvas id="glCanvas"></canvas>
+	</body>
+</html>

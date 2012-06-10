@@ -3,6 +3,9 @@
 	[
 		{
 			"path": "mdn"
+		},
+		{
+			"path": "learningwebgl.com"
 		}
 	]
 }
