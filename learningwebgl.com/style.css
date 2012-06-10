@@ -9,10 +9,10 @@ div {
 	border-radius: 60px;
 	box-shadow: 5px 5px 5px rgba(0,0,0,.2);
 	display: block;
-	height: 600px;
+	height: 400px;
 	left: 50%;
 	margin-left: -520px;
-	margin-top: -320px;
+	margin-top: -220px;
 	padding: 20px;
 	position: absolute;
 	top: 50%;
@@ -45,10 +45,10 @@ div h1 {
 
 
 div:hover h1{
-	font-size: 150px;
+	font-size: 100px;
 	left: 40px;
 	opacity: 0.6;
-	top: 180px;
+	top: 150px;
 	-webkit-transform: rotate(-20deg);
 }
 

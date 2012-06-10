@@ -30,6 +30,7 @@
 		];
 
 		vertices.itemSize = 3;
+		vertices.numItems = 3;
 		
 		trianguleVertexPositionBuffer = webgl.createBuffer(glContext, vertices);
 
@@ -41,12 +42,33 @@
 			-1, -1, 0
 		];
 
-		vertices.itemSize = 4;
+		vertices.numItems = 4;
+		vertices.itemSize = 3;
 
 		squareVertexPositionBuffer = webgl.createBuffer(glContext, vertices);
 
-		webgl.drawScene({
-			gl: glContext
+		glContext.uMVMatrix = mat4.create();
+		glContext.uPMatrix = mat4.create();
+
+		var program = webgl.createShaderProgram(glContext, {
+			scriptIds: ["x-vertex", "x-fragment"],
+			attributes: ['aVertexPosition'],
+			uniforms:['uMVMatrix', 'uPMatrix']
+		});
+
+		webgl.drawScene(glContext, {
+			objects:{
+				triangule: {
+					translation: [-1.5, 0, -7],
+					buffer: trianguleVertexPositionBuffer,
+					vertexAttribute: 'aVertexPosition'
+				},
+				square: {
+					translation: [3, 0, 0],
+					buffer: squareVertexPositionBuffer,
+					vertexAttribute: 'aVertexPosition'
+				}
+			}
 		});
 	};
 

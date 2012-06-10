@@ -8,6 +8,26 @@
 		<script type="text/javascript" src="lesson01.js"></script>
 
 		<link rel="stylesheet" type="text/css" href="style.css" />
+
+
+		<script id="x-fragment" type="x-shader/x-fragment">
+			precision mediump float;
+
+			void main (void) {
+				gl_FragColor = vec4(1.0. 1.0, 1.0, 1.0);
+			}
+		</script>
+
+		<script id="x-vertex" type="x-shader/x-vertex">
+			attribute vec3 aVertexPosition;
+
+			uniform mat4 uMVMatrix;
+			uniform mat4 uPMatrix;
+
+			void main (void) {
+				gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+			}
+		</script>
 	</head>
 	<body>
 		<div>

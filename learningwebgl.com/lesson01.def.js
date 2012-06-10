@@ -52,7 +52,7 @@
 		glContext.bindBuffer(glContext.ARRAY_BUFFER, buffer);
 		glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(vertices), glContext.STATIC_DRAW);
 
-		buffer.$numItems = vertices.length;
+		buffer.$numItems = vertices.numItems;
 		buffer.$itemSize = vertices.itemSize;
 		buffer.$vertices = vertices;
 
@@ -60,8 +60,7 @@
 	};
 
 
-	var drawScene = function (params) {
-		var gl = params.gl;
+	var drawScene = function (gl, params) {
 		var objects = params.objects || {};
 
 		// Será explicado, só diz que é importante...
@@ -69,7 +68,7 @@
 
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		var pMatrix = mat4.create();
+		setMatrixUniforms(gl, params.program);
 
 		mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100, pMatrix);
 
@@ -87,25 +86,26 @@
 
 		var translation = params.translation;
 		var shaderProgram = params.shaderProgram;
+		var vertexAttribute = params.vertexAttribute;
 
 		// Tentarei fechar o contexto de um objeto...
-		var mvMatrix = mat4.identity();
+		// var mvMatrix = mat4.identity();
 
 		if (translation)
 			//[x, y, z]
 			mat4.translate(mvMatrix, translation);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, params.buffer);
-		gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, params.buffer.$itemSize, gl.FLOAT, false, 0, 0);
 
-		setMatrixUniforms();
+		// TODO: Acertar o attributo (vertexPositionAttribute)
+		gl.vertexAttribPointer(shaderProgram.attributes[vertexAttribute], params.buffer.$itemSize, gl.FLOAT, false, 0, 0);
 
 		gl.drawArrays(gl.TRIANGULES, 0, params.buffer, params.buffer.numItems);
 	};
 
 
 
-	var getShader = function (gl, scriptId) {
+	var createShader = function (gl, scriptId) {
 		var script = document.getElementById(scriptId);
 
 		if (!script)
@@ -139,11 +139,66 @@
 	};
 
 
+
+	var createShaderProgram = function (gl, params) {
+		var scriptIds = params.scriptIds;
+		var shaders = [];
+
+		if (scriptIds)
+			scriptIds.forEach(function(scriptId){
+				shaders.push(createShader(scriptId));
+			});
+
+		if (!shaders.length)
+			throw new Error("No Shaders!");
+
+		var program = gl.createProgram();
+		shaders.forEach(function(shader){
+			gl.attachShader(program, shader);
+		});
+
+		gl.linkProgram(program);
+
+		if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+			throw new Error("Shader Program Link Error: " + gl.getProgramInfoLog(program));
+
+		gl.userProgram(program);
+
+		program.attributes = {};
+
+		if (params.attributes)
+
+			params.attributes.forEach(function (attribName) {
+				program.attributes[attribName] = gl.getAttribLocation(program, attribName);
+				gl.enableVertexAttribArray(program.attributes[attribName])
+			});
+
+		program.uniforms = {};
+		if (params.uniforms)
+
+			params.uniforms.forEach(function (uniformName){
+				program.uniforms[uniformName] = gl.getUniformLocation(program, uniformName);
+			});
+
+
+
+	};
+
+	var setMatrixUniforms = function (gl, program) {
+		if (program && program.uniforms)
+			for (var uniformName in program.uniforms) {
+				gl.uniformMatrix4fv(program.uniforms[uniformName], false, gl[uniformName]);
+			};
+	};
+
+
 	//Exportando as coisas....
 	webgl.start = start;
 	webgl.initGL = initGL;
 	webgl.createBuffer = createBuffer;
 	webgl.drawScene = drawScene;
 	webgl.drawObject = drawObject;
+	webgl.createShader = createShader;
+	webgl.createShaderProgram = createShaderProgram;
 
 })(window);
