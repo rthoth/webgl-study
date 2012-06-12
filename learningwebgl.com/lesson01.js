@@ -51,22 +51,25 @@
 		glContext.uPMatrix = mat4.create();
 
 		var program = webgl.createShaderProgram(glContext, {
-			scriptIds: ["x-vertex", "x-fragment"],
+			scriptIds: ["x-fragment", "x-vertex"],
 			attributes: ['aVertexPosition'],
 			uniforms:['uMVMatrix', 'uPMatrix']
 		});
 
 		webgl.drawScene(glContext, {
+			shaderProgram: program,
 			objects:{
 				triangule: {
 					translation: [-1.5, 0, -7],
 					buffer: trianguleVertexPositionBuffer,
-					vertexAttribute: 'aVertexPosition'
+					vertexAttribute: 'aVertexPosition',
+					mode: glContext.TRIANGLES
 				},
 				square: {
 					translation: [3, 0, 0],
 					buffer: squareVertexPositionBuffer,
-					vertexAttribute: 'aVertexPosition'
+					vertexAttribute: 'aVertexPosition',
+					mode: glContext.TRIANGLE_STRIP
 				}
 			}
 		});

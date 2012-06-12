@@ -21,7 +21,7 @@ div {
 
 canvas {
 	background: #79E400;
-	border: 1px solid #00F;
+	border: none;
 	border-radius: 40px;
 	height: 100%;
 	position: relative;

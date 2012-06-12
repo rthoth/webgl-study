@@ -30,6 +30,10 @@
 
 		context.viewportWidth = canvas.offsetWidth;
 		context.viewportHeight = canvas.offsetHeight;
+
+		context.clearColor(0, 0, 0, 1);
+		context.enable(context.DEPTH_TEST);
+
 		
 		return context;
 	};
@@ -68,13 +72,16 @@
 
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		setMatrixUniforms(gl, params.program);
 
-		mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100, pMatrix);
+		mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100, gl.uPMatrix);
 
-		//mat4.identity(mvMatrix);
+		mat4.identity(gl.uMVMatrix);
 
 		for (var objectName in objects) {
+
+			objects[objectName].mvMatrix =  gl.uMVMatrix;
+			objects[objectName].shaderProgram = params.shaderProgram;
+
 			drawObject(gl, objectName, objects[objectName]);
 		}
 
@@ -87,9 +94,10 @@
 		var translation = params.translation;
 		var shaderProgram = params.shaderProgram;
 		var vertexAttribute = params.vertexAttribute;
+		var mvMatrix = params.mvMatrix;
+		var mode = params.mode;
 
 		// Tentarei fechar o contexto de um objeto...
-		// var mvMatrix = mat4.identity();
 
 		if (translation)
 			//[x, y, z]
@@ -100,7 +108,13 @@
 		// TODO: Acertar o attributo (vertexPositionAttribute)
 		gl.vertexAttribPointer(shaderProgram.attributes[vertexAttribute], params.buffer.$itemSize, gl.FLOAT, false, 0, 0);
 
-		gl.drawArrays(gl.TRIANGULES, 0, params.buffer, params.buffer.numItems);
+
+		setMatrixUniforms(gl, shaderProgram);
+
+		gl.drawArrays(mode, 0, params.buffer.$numItems);
+		console.log(gl.getError());
+
+
 	};
 
 
@@ -132,6 +146,7 @@
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
 
+
 		if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
 			throw new Error("Shader compile error " + scriptId + ": " + gl.getShaderInfoLog(shader));
 
@@ -146,7 +161,7 @@
 
 		if (scriptIds)
 			scriptIds.forEach(function(scriptId){
-				shaders.push(createShader(scriptId));
+				shaders.push(createShader(gl, scriptId));
 			});
 
 		if (!shaders.length)
@@ -162,7 +177,7 @@
 		if (!gl.getProgramParameter(program, gl.LINK_STATUS))
 			throw new Error("Shader Program Link Error: " + gl.getProgramInfoLog(program));
 
-		gl.userProgram(program);
+		gl.useProgram(program);
 
 		program.attributes = {};
 
@@ -170,7 +185,7 @@
 
 			params.attributes.forEach(function (attribName) {
 				program.attributes[attribName] = gl.getAttribLocation(program, attribName);
-				gl.enableVertexAttribArray(program.attributes[attribName])
+				gl.enableVertexAttribArray(program.attributes[attribName]);
 			});
 
 		program.uniforms = {};
@@ -181,6 +196,7 @@
 			});
 
 
+		return program;
 
 	};
 
