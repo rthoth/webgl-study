@@ -1,8 +1,4 @@
 /**
-	Nesse arquivo coloco as coisas que são efetivamente a lição 01
-*/
-
-/**
 	
 	@description
 
@@ -14,65 +10,60 @@
 ;(function (exports) {
 	// TODO: 
 
-	var trianguleVertexPositionBuffer; //Pelo que diz aqui teremos o triângulo!
-	var squareVertexPositionBuffer; //Os vértices do quadrado!
+	window.onload = function () {
+		var gl = webgl.prepareContext(document.getElementById("lesson01"));
 
 
-
-	window.onload = function(){
-		var glContext = webgl.start("lesson01");
-
-
-		var vertices = [
-			 0,  1, 0,
-			-1, -1, 0,
-			 1, -1, 0
-		];
-
-		vertices.itemSize = 3;
-		vertices.numItems = 3;
-		
-		trianguleVertexPositionBuffer = webgl.createBuffer(glContext, vertices);
-
-		//Acho que isso é pegadinha do cara...
-		vertices = [
-			 1,  1, 0,
-			-1,  1, 0,
-			 1, -1, 0,
-			-1, -1, 0
-		];
-
-		vertices.numItems = 4;
-		vertices.itemSize = 3;
-
-		squareVertexPositionBuffer = webgl.createBuffer(glContext, vertices);
-
-		glContext.uMVMatrix = mat4.create();
-		glContext.uPMatrix = mat4.create();
-
-		var program = webgl.createShaderProgram(glContext, {
-			scriptIds: ["x-fragment", "x-vertex"],
-			attributes: ['aVertexPosition'],
-			uniforms:['uMVMatrix', 'uPMatrix']
+		var shaderProgram = webgl.createShaderProgram(gl, {
+			shaders: ['x-fragment', 'x-vertex'],
+			attribIndex: ['aVertexPosition'],
+			uniforms: ['uMVMatrix', 'uPMatrix']
 		});
 
-		webgl.drawScene(glContext, {
-			shaderProgram: program,
-			objects:{
-				triangule: {
-					translation: [-1.5, 0, -7],
-					buffer: trianguleVertexPositionBuffer,
-					vertexAttribute: 'aVertexPosition',
-					mode: glContext.TRIANGLES
-				},
-				square: {
-					translation: [3, 0, 0],
-					buffer: squareVertexPositionBuffer,
-					vertexAttribute: 'aVertexPosition',
-					mode: glContext.TRIANGLE_STRIP
-				}
+		var triangleBuffer = webgl.createBuffer(gl, {
+			vertices: [
+				 0,  1, 0,
+				-1, -1, 0,
+				 1, -1, 0
+			]
+		});
+
+		var squareBuffer = webgl.createBuffer(gl, {
+			vertices: [
+				 1,  1, 0,
+				-1,  1, 0,
+				 1, -1, 0,
+				-1, -1, 0
+			]
+		});
+
+		var objects = [
+			{
+				buffer: triangleBuffer,
+				numItems: 3,
+				itemSize: 3,
+				mode: gl.TRIANGLES,
+				translation: [-1.5, 0, -7]
+			},
+			{
+				buffer: squareBuffer,
+				numItems: 4,
+				itemSize: 3,
+				mode: gl.TRIANGLE_STRIP,
+				translation: [3, 0, 0]
 			}
-		});
+		];
+
+		setInterval(function(){
+			objects[0].translation[2] = -7 - Math.random() * 3;
+			objects[1].translation[2] = -5 - Math.random() * 4;
+			webgl.drawScene(gl, {
+				program: shaderProgram,
+				objects: objects
+			});
+		}, 100)
+
+
 	};
 
 })(window);

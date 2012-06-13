@@ -22,9 +22,9 @@ div {
 canvas {
 	background: #79E400;
 	border: none;
-	border-radius: 40px;
+	/*border-radius: 40px;*/
 	height: 100%;
-	position: relative;
+	/*position: relative;*/
 	width: 100%;
 }
 
@@ -47,7 +47,7 @@ div h1 {
 div:hover h1{
 	font-size: 100px;
 	left: 40px;
-	opacity: 0.6;
+	opacity: 1;
 	top: 150px;
 	-webkit-transform: rotate(-20deg);
 }
